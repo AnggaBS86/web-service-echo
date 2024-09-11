@@ -12,24 +12,25 @@ import (
 )
 
 var (
-	db  *gorm.DB
-	err error
-	mu  sync.Mutex // Mutex to prevent race conditions
+	db   *gorm.DB
+	err  error
+	mu   sync.Mutex // Mutex to prevent race conditions
+	once sync.Once
 )
 
 // Init initializes the database connection with a mutex to prevent race conditions.
 func Init() {
-	mu.Lock() // Lock the mutex to ensure no race conditions
-	defer mu.Unlock()
+	once.Do(func() {
+		mu.Lock()
+		defer mu.Unlock()
 
-	// Initialize the database
-	db, err = gorm.Open(os.Getenv("DB_FACTORY"), config.GetDialect())
-	if err != nil {
-		panic("Error connection : " + err.Error())
-	}
+		db, err = gorm.Open(os.Getenv("DB_FACTORY"), config.GetDialect())
+		if err != nil {
+			panic("Error connection : " + err.Error())
+		}
 
-	// Setup the connection pool
-	setupConnectionPool(db)
+		setupConnectionPool(db)
+	})
 }
 
 // setupConnectionPool configures the connection pool settings for the database.

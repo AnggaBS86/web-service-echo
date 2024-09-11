@@ -1,0 +1,31 @@
+version: '3'
+services:
+  db:
+    image: mysql/mysql-server:5.7
+    container_name: db_abs
+    ports:
+      - "3305:3305"
+    environment:
+      - "MYSQL_ROOT_PASSWORD=${DB_PASS}"
+      - "MYSQL_USER=${DB_USER}"
+      - "MYSQL_PASSWORD=${DB_PASS}"
+      - "MYSQL_DATABASE=${DB_NAME}"   
+      - DATA_SOURCE_NAME="root:123456@db_abs:3306/abs"
+  web:
+    build: .
+    ports:
+      - "1234:1234"
+    volumes:
+      - ".:/app"
+    depends_on:
+      - db
+    environment:
+      - "DB_USER=${DB_USER}"
+      - "DB_PASS=${DB_PASS}"
+      - "DB_PORT=${DB_PORT}"
+      - "DB_NAME=${DB_NAME}"   
+      - "DB_FACTORY=mysql"
+      - "APP_PORT=${APP_PORT}"
+      - "DB_MAX_IDDLE_CON=${DB_MAX_IDDLE_CON}"
+      - "DB_MAX_OPEN_CON=${DB_MAX_OPEN_CON}"
+      - "DB_HOST=${DB_HOST}"

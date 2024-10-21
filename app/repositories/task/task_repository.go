@@ -22,8 +22,6 @@ func NewTaskRepository() TaskInterface {
 }
 
 func (t *TaskRepository) GetAll(e echo.Context) *libraries.Pagination {
-	//dbs := db.GetDB()
-	//t.db = db.GetDB()
 	pagination := config.DefaultPagination(2, 1, "")
 	tasks := make([]models.Task, 0)
 

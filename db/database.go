@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"web-service-echo/config"
-	//"gorm.io/gorm"
+
 	"github.com/jinzhu/gorm"
 )
 
@@ -22,8 +22,6 @@ var (
 // Init initializes the database connection.
 func Init() {
 	once.Do(func() {
-		//dsn := "root:123456@tcp(127.0.0.1:3306)/abs?charset=utf8mb4&parseTime=True&loc=Local"
-
 		// Open the connection and assign to the global db variable
 		db, err = gorm.Open(os.Getenv("DB_FACTORY"), config.GetDialect())
 		if err != nil {

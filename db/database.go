@@ -1,60 +1,62 @@
 package db
 
 import (
+	"database/sql"
 	"log"
 	"os"
 	"strconv"
 	"sync"
 	"time"
-	"web-service-echo/config"
 
+	"web-service-echo/config"
+	//"gorm.io/gorm"
 	"github.com/jinzhu/gorm"
 )
 
 var (
 	db   *gorm.DB
 	err  error
-	mu   sync.Mutex // Mutex to prevent race conditions
 	once sync.Once
 )
 
-// Init initializes the database connection with a mutex to prevent race conditions.
+// Init initializes the database connection.
 func Init() {
 	once.Do(func() {
-		mu.Lock()
-		defer mu.Unlock()
+		//dsn := "root:123456@tcp(127.0.0.1:3306)/abs?charset=utf8mb4&parseTime=True&loc=Local"
 
+		// Open the connection and assign to the global db variable
 		db, err = gorm.Open(os.Getenv("DB_FACTORY"), config.GetDialect())
 		if err != nil {
-			panic("Error connection : " + err.Error())
+			log.Panic("Error connecting to the database:", err)
 		}
 
-		setupConnectionPool(db)
+		if sqlDB := db.DB(); err == nil {
+			setupConnectionPool(sqlDB)
+		} else {
+			log.Panic("Failed to get database handle:", err)
+		}
 	})
 }
 
 // setupConnectionPool configures the connection pool settings for the database.
-func setupConnectionPool(db *gorm.DB) {
-	maxIdleCon, err := strconv.Atoi(os.Getenv("DB_MAX_IDDLE_CON"))
+func setupConnectionPool(sqlDB *sql.DB) {
+	maxIdleCon, err := strconv.Atoi(os.Getenv("DB_MAX_IDLE_CON"))
 	if err != nil {
 		maxIdleCon = 100
-		log.Println(err.Error())
+		log.Println("Using default max idle connections:", err)
 	}
 	maxOpenCon, err := strconv.Atoi(os.Getenv("DB_MAX_OPEN_CON"))
 	if err != nil {
 		maxOpenCon = 50
-		log.Println(err.Error())
+		log.Println("Using default max open connections:", err)
 	}
 
-	db.DB().SetMaxIdleConns(maxIdleCon)
-	db.DB().SetMaxOpenConns(maxOpenCon)
-	db.DB().SetConnMaxLifetime(time.Hour)
+	sqlDB.SetMaxIdleConns(maxIdleCon)
+	sqlDB.SetMaxOpenConns(maxOpenCon)
+	sqlDB.SetConnMaxLifetime(time.Hour)
 }
 
-// GetDB provides thread-safe access to the db instance.
+// GetDB provides access to the db instance.
 func GetDB() *gorm.DB {
-	mu.Lock() // Lock the mutex to ensure thread safety
-	defer mu.Unlock()
-
 	return db
 }

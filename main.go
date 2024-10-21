@@ -8,9 +8,9 @@ import (
 	"web-service-echo/db"
 	"web-service-echo/routes"
 
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
+	_ "gorm.io/driver/mysql"
 )
 
 func main() {

@@ -51,7 +51,7 @@ func (q *Queue) AddJob(job Job) {
 	log.Printf("New job %s added to %s queue", job.Name, q.name)
 }
 
-func (j Job) Run() error {
+func (j *Job) Run() error {
 	log.Printf("Job running: %s", j.Name)
 
 	err := j.Action()

@@ -1,10 +1,5 @@
 package config
 
-import (
-	"fmt"
-	"os"
-)
-
 type Database struct {
 	User         string
 	Password     string
@@ -54,10 +49,10 @@ func (d *Database) GetDatabaseName() string {
 }
 
 func GetDialect() string {
-	user := os.Getenv("DB_USER")
-	password := os.Getenv("DB_PASS")
-	host := os.Getenv("DB_HOST")
-	port := os.Getenv("DB_PORT")
-	dbname := os.Getenv("DB_NAME")
-	return fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local", user, password, host, port, dbname)
+	// user := os.Getenv("DB_USER")
+	// password := os.Getenv("DB_PASS")
+	// host := os.Getenv("DB_HOST")
+	// port := os.Getenv("DB_PORT")
+	// dbname := os.Getenv("DB_NAME")
+	return "root:123456@tcp(127.0.0.1:3306)/abs?charset=utf8mb4&parseTime=True&loc=Local"
 }
